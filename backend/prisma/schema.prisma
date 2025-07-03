@@ -7,12 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Transaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  amount      Float    // Pode ser positivo (receita) ou negativo (despesa)
+  category    String
+  type        String   // "income" ou "expense"
+  date        DateTime
+  description String?
+  userId      String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  responsavel String?
+  user User? @relation(fields: [userId], references: [id])
+}
+
 model User {
-  id    String @id @default(auto()) @map("_id") @db.ObjectId
-  name  String
-  email String @unique
-  tasks Task[] @relation(fields: [], references: [])
-  createdAt DateTime @default(now())
+  id           String        @id @default(auto()) @map("_id") @db.ObjectId
+  name         String
+  email        String        @unique
+  tasks        Task[]        @relation(fields: [], references: [])
+  transactions Transaction[] @relation(fields: [], references: [])
+  createdAt    DateTime      @default(now())
 }
 
 model Task {

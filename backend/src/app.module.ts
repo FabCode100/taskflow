@@ -7,10 +7,13 @@ import { TasksController } from './tasks/tasks.controller';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { DashboardService } from './dashboard/dashboard.service';
 import { DashboardController } from './dashboard/dashboard.controller';
+import { TransactionsModule } from './transactions/transactions.module';
+import { TransactionsService } from './transactions/transactions.service';
+import { TransactionsController } from './transactions/transactions.controller';
 
 @Module({
-  imports: [DashboardModule],
-  controllers: [UsersController, TasksController, DashboardController],
-  providers: [PrismaService, UsersService, TasksService, DashboardService],
+  imports: [DashboardModule, TransactionsModule],
+  controllers: [UsersController, TasksController, DashboardController, TransactionsController],
+  providers: [PrismaService, UsersService, TasksService, DashboardService, TransactionsService],
 })
 export class AppModule { }

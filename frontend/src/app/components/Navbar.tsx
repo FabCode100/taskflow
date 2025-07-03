@@ -42,13 +42,19 @@ export default function Navbar() {
 
                 <div className="hidden md:flex gap-6">
                     <Link href="/dashboard" className={isActive('/dashboard')}>
-                        Dashboard
+                        Rotina
                     </Link>
                     <Link href="/users" className={isActive('/users')}>
                         Usuários
                     </Link>
                     <Link href="/tasks" className={isActive('/tasks')}>
                         Tarefas
+                    </Link>
+                    <Link href="/transactions" className={isActive('/transactions')}>
+                        Financeiro
+                    </Link>
+                    <Link href="/financedashboard" className={isActive('/financedashboard')}>
+                        Dashboard
                     </Link>
                 </div>
             </div>
@@ -60,8 +66,8 @@ export default function Navbar() {
             >
                 <div className="flex flex-col gap-4 px-2">
                     <Link
-                        href="/dashboard"
-                        className={`${isActive('/dashboard')} block`}
+                        href="/financedashboard"
+                        className={`${isActive('/financedashboard')} block`}
                         onClick={() => setIsOpen(false)}
                     >
                         Dashboard
@@ -79,6 +85,13 @@ export default function Navbar() {
                         onClick={() => setIsOpen(false)}
                     >
                         Tarefas
+                    </Link>
+                    <Link
+                        href="/transactions"
+                        className={`${isActive('/transactions')} block`}
+                        onClick={() => setIsOpen(false)}
+                    >
+                        Transações
                     </Link>
                 </div>
             </div>
