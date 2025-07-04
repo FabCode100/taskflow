@@ -14,19 +14,27 @@ export class TasksController {
     }
 
     @Post()
-    create(@Body() body: { title: string; description?: string; userId: string }) {
+    create(@Body() body: { title: string; description?: string; userId: string; recurring?: boolean; tag?: string }) {
         return this.tasksService.create(body);
     }
+
     @Patch(':id/done')
     markAsDone(@Param('id') id: string) {
         return this.tasksService.markAsDone(id);
     }
-    @Get('generate-recurring')
-    async gerarRecorrentes() {
-        return this.tasksService.gerarTarefasRecorrentes();
+
+    // Rota para gerar novamente as tarefas recorrentes
+    @Patch('renew-recurring')
+    renovarRecorrentes() {
+        return this.tasksService.renovarRecorrentes();
     }
+
+
     @Patch(':id')
-    update(@Param('id') id: string, @Body() body: { title?: string; description?: string; tag?: string; recurring?: boolean }) {
+    update(
+        @Param('id') id: string,
+        @Body() body: { title?: string; description?: string; tag?: string; recurring?: boolean }
+    ) {
         return this.tasksService.update(id, body);
     }
 
@@ -34,5 +42,4 @@ export class TasksController {
     delete(@Param('id') id: string) {
         return this.tasksService.delete(id);
     }
-
 }

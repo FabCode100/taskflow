@@ -5,8 +5,13 @@ import { DashboardService } from './dashboard.service';
 export class DashboardController {
     constructor(private readonly dashboardService: DashboardService) { }
 
-    @Get('evolution')
-    getEvolution() {
-        return this.dashboardService.getEvolution();
+    @Get('produtividade')
+    produtividade() {
+        return this.dashboardService.produtividadePorDia();
     }
+    @Get('tasks-by-category')
+    async getTasksByCategory() {
+        return this.dashboardService.getTasksByCategory();
+    }
+
 }

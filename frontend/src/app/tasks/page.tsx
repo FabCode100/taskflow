@@ -101,6 +101,15 @@ export default function TasksPage() {
             showNotification('error', 'Erro ao criar tarefa');
         }
     }
+    async function renovarRotina() {
+        try {
+            await api.patch('/tasks/renew-recurring');
+            loadTasks(filterTag, searchTerm);
+            showNotification('success', 'Rotina recorrente renovada!');
+        } catch {
+            showNotification('error', 'Erro ao renovar rotina');
+        }
+    }
 
     async function concluirTarefa(id: string) {
         try {
@@ -196,7 +205,7 @@ export default function TasksPage() {
                         <Plus size={16} /> Criar Tarefa
                     </button>
                 </form>
-                
+
                 {/* Filtros e busca */}
                 <div className="flex gap-4 flex-wrap mb-4 items-center">
                     {tags.map(t => (
@@ -235,6 +244,12 @@ export default function TasksPage() {
                 {/* Pendentes */}
                 <div className="flex flex-col gap-4">
                     <h2 className="text-xl font-semibold border-b border-neutral-800 pb-1">⚡ Pendentes</h2>
+                    <button
+                        onClick={renovarRotina}
+                        className="flex items-center gap-2 bg-green-700 hover:bg-green-800 px-3 py-1 rounded text-white text-sm"
+                    >
+                        <Plus size={14} /> Renovar Rotina
+                    </button>
                     {pendentes.length === 0 && <p className="text-neutral-500">Nenhuma tarefa pendente.</p>}
                     {pendentes.map(task => (
                         <TaskCard
