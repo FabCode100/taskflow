@@ -61,6 +61,31 @@ export default function FinanceDashboard() {
         if (typeof value !== 'number' || isNaN(value)) return 'R$ 0';
         return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
     }
+    const [insight, setInsight] = useState<string>('');
+
+    useEffect(() => {
+        if (summary) {
+            gerarInsightFinanceiro();
+        }
+    }, [summary]);
+
+    function gerarInsightFinanceiro() {
+        const resumo = `
+Total: ${formatCurrency(summary?.total)}
+Categorias:
+${summary?.categorySummary?.map(c => `${c.category}: Receitas ${formatCurrency(c.income)}, Despesas ${formatCurrency(c.expense)}`).join('\n')}
+
+Responsáveis:
+${summary?.responsibleSummary?.map(r => `${formatResponsavelLabel(r.responsavel)}: Receitas ${formatCurrency(r.income)}, Despesas ${formatCurrency(r.expense)}`).join('\n')}
+
+Evolução mensal:
+${summary?.monthlySummary?.map(m => `${formatMonthLabel(m.month)} - Receitas ${formatCurrency(m.income)}, Despesas ${formatCurrency(m.expense)}`).join('\n')}
+    `;
+
+        api.post('/insights/financeiro', { resumo })
+            .then(res => setInsight(res.data.insight))
+            .catch(() => setInsight('Não foi possível gerar insight no momento.'));
+    }
 
     // Corrige bug do mês adiantando fuso
     function formatMonthLabel(month: string) {
@@ -212,6 +237,12 @@ export default function FinanceDashboard() {
                                 <p className="text-neutral-500">Sem dados por responsável.</p>
                             )}
                         </div>
+                        {insight && (
+                            <div className="bg-neutral-800 p-4 rounded-xl border border-neutral-700 text-sm text-neutral-300 shadow">
+                                <h2 className="text-lg font-semibold mb-2">💡 Insight da IA</h2>
+                                <p>{insight}</p>
+                            </div>
+                        )}
 
                     </div>
                 )}

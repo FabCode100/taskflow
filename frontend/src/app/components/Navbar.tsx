@@ -40,15 +40,19 @@ export default function Navbar() {
                     )}
                 </button>
 
+                {/* Menu Desktop */}
                 <div className="hidden md:flex gap-6">
                     <Link href="/dashboard" className={isActive('/dashboard')}>
                         Rotina
                     </Link>
-                    <Link href="/users" className={isActive('/users')}>
-                        Usuários
-                    </Link>
                     <Link href="/tasks" className={isActive('/tasks')}>
                         Tarefas
+                    </Link>
+                    <Link href="/goals" className={isActive('/goals')}>
+                        Metas
+                    </Link>
+                    <Link href="/goalsdashboard" className={isActive('/goalsdashboard')}>
+                        MetasDashboard
                     </Link>
                     <Link href="/transactions" className={isActive('/transactions')}>
                         Financeiro
@@ -56,42 +60,35 @@ export default function Navbar() {
                     <Link href="/financedashboard" className={isActive('/financedashboard')}>
                         Dashboard
                     </Link>
+                    <Link href="/users" className={isActive('/users')}>
+                        Usuários
+                    </Link>
                 </div>
             </div>
 
-            {/* Mobile menu com transição */}
+            {/* Mobile Menu */}
             <div
                 className={`md:hidden overflow-hidden transition-[max-height] duration-300 ease-in-out ${isOpen ? 'max-h-52 mt-4' : 'max-h-0'
                     }`}
             >
                 <div className="flex flex-col gap-4 px-2">
-                    <Link
-                        href="/financedashboard"
-                        className={`${isActive('/financedashboard')} block`}
-                        onClick={() => setIsOpen(false)}
-                    >
-                        Dashboard
+                    <Link href="/dashboard" className={`${isActive('/dashboard')} block`} onClick={() => setIsOpen(false)}>
+                        Rotina
                     </Link>
-                    <Link
-                        href="/users"
-                        className={`${isActive('/users')} block`}
-                        onClick={() => setIsOpen(false)}
-                    >
-                        Usuários
-                    </Link>
-                    <Link
-                        href="/tasks"
-                        className={`${isActive('/tasks')} block`}
-                        onClick={() => setIsOpen(false)}
-                    >
+                    <Link href="/tasks" className={`${isActive('/tasks')} block`} onClick={() => setIsOpen(false)}>
                         Tarefas
                     </Link>
-                    <Link
-                        href="/transactions"
-                        className={`${isActive('/transactions')} block`}
-                        onClick={() => setIsOpen(false)}
-                    >
-                        Transações
+                    <Link href="/goals" className={`${isActive('/goals')} block`} onClick={() => setIsOpen(false)}>
+                        Metas
+                    </Link>
+                    <Link href="/transactions" className={`${isActive('/transactions')} block`} onClick={() => setIsOpen(false)}>
+                        Financeiro
+                    </Link>
+                    <Link href="/financedashboard" className={`${isActive('/financedashboard')} block`} onClick={() => setIsOpen(false)}>
+                        Dashboard
+                    </Link>
+                    <Link href="/users" className={`${isActive('/users')} block`} onClick={() => setIsOpen(false)}>
+                        Usuários
                     </Link>
                 </div>
             </div>
