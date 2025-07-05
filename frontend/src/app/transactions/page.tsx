@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { Trash2, Plus, Pencil, X, Save } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface Transaction {
     id: string;
@@ -19,6 +20,7 @@ const categories = ['Salário', 'Alimentação', 'Transporte', 'Lazer', 'Superme
 const responsaveis = ['Mãe', 'Pai', 'Fabricio'];
 
 export default function FinancePage() {
+    const router = useRouter();
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [title, setTitle] = useState('');
     const [amount, setAmount] = useState<number>(0);
@@ -106,7 +108,12 @@ export default function FinancePage() {
     return (
         <div className="min-h-screen flex justify-center p-8" style={{ backdropFilter: 'blur(4px)' }}>
             <div className="w-full max-w-3xl flex flex-col gap-8 bg-neutral-900/70 backdrop-blur-md p-6 rounded-2xl border border-neutral-800">
-
+                <button
+                    onClick={() => router.push('/financedashboard')}
+                    className="mb-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                >
+                    Ver Dashboard
+                </button>
                 {notification && (
                     <div className={`p-3 rounded mb-4 text-white ${notification.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
                         {notification.message}

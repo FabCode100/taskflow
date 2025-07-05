@@ -1,5 +1,5 @@
 'use client';
-
+import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { Check, Trash2, Plus, Pencil, X, Save } from 'lucide-react';
@@ -17,6 +17,7 @@ interface Goal {
 }
 
 export default function GoalsPage() {
+    const router = useRouter();
     const [goals, setGoals] = useState<Goal[]>([]);
 
     const [title, setTitle] = useState('');
@@ -115,7 +116,12 @@ export default function GoalsPage() {
     return (
         <div className="min-h-screen flex justify-center p-8" style={{ backdropFilter: 'blur(4px)' }}>
             <div className="w-full max-w-3xl flex flex-col gap-8 bg-neutral-900/70 backdrop-blur-md p-6 rounded-2xl border border-neutral-800">
-
+                <button
+                    onClick={() => router.push('/goalsdashboard')}
+                    className="mb-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                >
+                    Ver Dashboard
+                </button>
                 {notification && (
                     <div className={`p-3 rounded mb-4 text-white ${notification.type === 'success' ? 'bg-green-600' : 'bg-red-600'}`}>
                         {notification.message}
@@ -260,6 +266,7 @@ function GoalCard({ goal, completeGoal, deleteGoal, updateGoal, completed = fals
     const [responsible, setResponsible] = useState(goal.responsible || '');
     const [deadline, setDeadline] = useState(goal.deadline ? goal.deadline.slice(0, 10) : '');
     const [recurring, setRecurring] = useState(goal.recurring);
+    const router = useRouter();
 
     function save() {
         updateGoal(goal.id, { title, description, category, responsible, deadline, recurring });

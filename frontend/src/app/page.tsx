@@ -1,15 +1,14 @@
-import Link from 'next/link';
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
-  return (
-    <div>
-      <h1>TaskFlow</h1>
-      <nav>
-        <ul>
-          <li><Link href="/users">Usuários</Link></li>
-          <li><Link href="/tasks">Tarefas</Link></li>
-        </ul>
-      </nav>
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/signup');
+  }, [router]);
+
+  return null; // ou loading spinner, etc
 }

@@ -72,15 +72,47 @@ Sugestão:
         rotinaDiaria: any[];
         resumoFinanceiro: string;
     }): Promise<string> {
-        const resumoMetas = this.gerarResumoMetas(data.metas);
-        const resumoRotina = data.rotinaDiaria
-            .map(r => `- ${r.habito}: ${r.status ? 'feito' : 'pendente'}`)
-            .join('\n');
-        const resumoFin = data.resumoFinanceiro;
 
-        const prompt = `
+        const prompt = this.montarPromptInsightCompleto(data);
+
+        try {
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
+
+            const res = await axios.post(endpoint, {
+                contents: [{ role: 'user', parts: [{ text: prompt }] }],
+            });
+
+            return res.data?.candidates?.[0]?.content?.parts?.[0]?.text ?? 'Nenhum insight gerado.';
+
+        } catch (err) {
+            console.error('Erro IA:', err.message);
+            return 'Não foi possível gerar o insight.';
+        }
+    }
+
+    private montarPromptInsightCompleto(data: {
+        metas: any[];
+        rotinaDiaria: any[];
+        resumoFinanceiro: string;
+    }): string {
+
+        const resumoMetas = this.gerarResumoMetas(data.metas);
+
+        const resumoRotina = data.rotinaDiaria?.length
+            ? data.rotinaDiaria.map(r =>
+                `- ${r.title}: ${r.status?.toLowerCase() === 'concluído' ? 'feito' : 'pendente'}`
+            ).join('\n')
+            : 'Nenhuma rotina registrada.';
+
+        const resumoFin = data.resumoFinanceiro || 'Nenhum resumo financeiro informado.';
+
+        return `
 Você é um especialista em produtividade e finanças pessoais.
-Considere as metas abaixo, a rotina diária atual e o resumo financeiro para gerar um insight prático, direto e personalizado.
+
+Com base nas metas, rotina diária e resumo financeiro abaixo, gere um insight prático, resumido e direto ao ponto. 
+Sua resposta deve ser clara, objetiva e sem formatação especial como asteriscos, listas em markdown ou símbolos decorativos.
+
+Utilize apenas texto simples. Pode usar parágrafos, pontuação normal e números, mas não use símbolos como * ou ** ou marcações visuais.
 
 Metas:
 ${resumoMetas}
@@ -91,32 +123,19 @@ ${resumoRotina}
 Resumo Financeiro:
 ${resumoFin}
 
-Baseado nessas informações, sugira rotinas diárias ou semanais e dicas financeiras para melhorar produtividade e equilíbrio financeiro.
-
-Sugestões:
-  `;
-
-        try {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${this.apiKey}`;
-            const res = await axios.post(endpoint, {
-                contents: [{ role: 'user', parts: [{ text: prompt }] }],
-            });
-            return res.data?.candidates?.[0]?.content?.parts?.[0]?.text ?? 'Nenhum insight gerado.';
-        } catch (err) {
-            console.error('Erro IA:', err.message);
-            return 'Não foi possível gerar o insight.';
-        }
+Gere o insight agora:
+`;
     }
 
-
     private gerarResumoMetas(metas: any[]): string {
-        if (!metas.length) return 'Nenhuma meta cadastrada.';
+        if (!metas?.length) return 'Nenhuma meta cadastrada.';
+
         return metas
             .map((m, i) => {
-                return `${i + 1}. ${m.title} - Prazo: ${m.deadline ? new Date(m.deadline).toLocaleDateString() : 'Sem prazo'} - Responsável: ${m.responsible ?? 'Não informado'} - Status: ${m.completed ? 'Concluída' : 'Pendente'
-                    }${m.description ? ` - ${m.description}` : ''}`;
+                return `${i + 1}. ${m.title} - Prazo: ${m.deadline ? new Date(m.deadline).toLocaleDateString() : 'Sem prazo'} - Responsável: ${m.responsible ?? 'Não informado'} - Status: ${m.completed ? 'Concluída' : 'Pendente'}${m.description ? ` - ${m.description}` : ''}`;
             })
             .join('\n');
     }
+
 
 }

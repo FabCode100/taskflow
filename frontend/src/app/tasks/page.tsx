@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { api } from '../services/api';
 import { Check, Trash2, Plus, Pencil, X, Save } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 interface Task {
     id: string;
@@ -30,6 +31,7 @@ const sortOptions = [
 ];
 
 export default function TasksPage() {
+    const router = useRouter();
     const [tasks, setTasks] = useState<Task[]>([]);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
@@ -150,6 +152,12 @@ export default function TasksPage() {
     return (
         <div className="min-h-screen flex justify-center p-8" style={{ backdropFilter: 'blur(4px)' }}>
             <div className="w-full max-w-3xl flex flex-col gap-8 bg-neutral-900/70 backdrop-blur-md p-6 rounded-2xl border border-neutral-800">
+                <button
+                    onClick={() => router.push('/dashboard')}
+                    className="mb-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded"
+                >
+                    Ver Dashboard
+                </button>
                 {/* Notificação */}
                 {notification && (
                     <div

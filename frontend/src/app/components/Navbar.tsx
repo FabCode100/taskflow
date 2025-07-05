@@ -42,26 +42,14 @@ export default function Navbar() {
 
                 {/* Menu Desktop */}
                 <div className="hidden md:flex gap-6">
-                    <Link href="/dashboard" className={isActive('/dashboard')}>
-                        Rotina
-                    </Link>
                     <Link href="/tasks" className={isActive('/tasks')}>
                         Tarefas
                     </Link>
                     <Link href="/goals" className={isActive('/goals')}>
                         Metas
                     </Link>
-                    <Link href="/goalsdashboard" className={isActive('/goalsdashboard')}>
-                        MetasDashboard
-                    </Link>
                     <Link href="/transactions" className={isActive('/transactions')}>
                         Financeiro
-                    </Link>
-                    <Link href="/financedashboard" className={isActive('/financedashboard')}>
-                        Dashboard
-                    </Link>
-                    <Link href="/users" className={isActive('/users')}>
-                        Usuários
                     </Link>
                 </div>
             </div>
@@ -72,9 +60,7 @@ export default function Navbar() {
                     }`}
             >
                 <div className="flex flex-col gap-4 px-2">
-                    <Link href="/dashboard" className={`${isActive('/dashboard')} block`} onClick={() => setIsOpen(false)}>
-                        Rotina
-                    </Link>
+
                     <Link href="/tasks" className={`${isActive('/tasks')} block`} onClick={() => setIsOpen(false)}>
                         Tarefas
                     </Link>
@@ -83,12 +69,6 @@ export default function Navbar() {
                     </Link>
                     <Link href="/transactions" className={`${isActive('/transactions')} block`} onClick={() => setIsOpen(false)}>
                         Financeiro
-                    </Link>
-                    <Link href="/financedashboard" className={`${isActive('/financedashboard')} block`} onClick={() => setIsOpen(false)}>
-                        Dashboard
-                    </Link>
-                    <Link href="/users" className={`${isActive('/users')} block`} onClick={() => setIsOpen(false)}>
-                        Usuários
                     </Link>
                 </div>
             </div>

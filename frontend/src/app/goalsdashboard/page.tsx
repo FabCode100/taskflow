@@ -48,6 +48,79 @@ export default function GoalsDashboard() {
     const [insight, setInsight] = useState<string>('');
     const [rotinaDiaria, setRotinaDiaria] = useState<any[]>([]);
     const [resumoFinanceiro, setResumoFinanceiro] = useState<string>('');
+    const [metasCompletas, setMetasCompletas] = useState<any[]>([]);
+    
+    function gerarResumoFinanceiroTexto(resumoFinanceiroObj: any): string {
+        if (!resumoFinanceiroObj) return '';
+
+        let texto = `Total financeiro (saldo): R$ ${resumoFinanceiroObj.total?.toFixed(2) || '0.00'}.\n\n`;
+
+        if (resumoFinanceiroObj.categorySummary?.length) {
+            texto += 'Resumo por categoria:\n';
+            resumoFinanceiroObj.categorySummary.forEach((cat: any) => {
+                texto += ` - ${cat.category}: Receita R$ ${cat.income?.toFixed(2) || '0.00'}, Despesa R$ ${cat.expense?.toFixed(2) || '0.00'}\n`;
+            });
+            texto += '\n';
+        }
+
+        if (resumoFinanceiroObj.monthlySummary?.length) {
+            texto += 'Resumo mensal:\n';
+            resumoFinanceiroObj.monthlySummary.forEach((mes: any) => {
+                texto += ` - ${mes.month}: Receita R$ ${mes.income?.toFixed(2) || '0.00'}, Despesa R$ ${mes.expense?.toFixed(2) || '0.00'}\n`;
+            });
+            texto += '\n';
+        }
+
+        if (resumoFinanceiroObj.responsibleSummary?.length) {
+            texto += 'Resumo por responsável:\n';
+            resumoFinanceiroObj.responsibleSummary.forEach((resp: any) => {
+                texto += ` - ${resp.responsavel}: Receita R$ ${resp.income?.toFixed(2) || '0.00'}, Despesa R$ ${resp.expense?.toFixed(2) || '0.00'}\n`;
+            });
+        }
+
+        return texto;
+    }
+
+    function prepararPayload() {
+        // Selecionar só os campos importantes das metas completas
+        const metasParaEnviar = metasCompletas.map(meta => ({
+            title: meta.title,
+            description: meta.description,
+            responsible: meta.responsible || meta.responsavel, // cuide do nome do campo
+            deadline: meta.deadline,
+            completed: meta.completed ?? false, // se disponível
+        }));
+
+        // Selecionar só os campos importantes da rotina diária
+        const rotinaParaEnviar = rotinaDiaria.map(tarefa => ({
+            title: tarefa.title,
+            description: tarefa.description,
+            status: tarefa.status,
+            recurring: tarefa.recurring,
+        }));
+
+        return {
+            metas: metasParaEnviar,
+            rotinaDiaria: rotinaParaEnviar,
+            resumoFinanceiro,
+        };
+    }
+
+    async function gerarInsightMetas() {
+        const payload = prepararPayload();
+
+        console.log('Enviando payload para insight:', payload);
+
+        api.post('/insights/meta', payload)
+            .then(res => {
+                console.log('Resposta do Insight:', res.data);
+                setInsight(res.data.insight);
+            })
+            .catch(err => {
+                console.error('Erro ao gerar insight:', err);
+                setInsight('Não foi possível gerar insight no momento.');
+            });
+    }
 
     useEffect(() => {
         async function loadData() {
@@ -55,17 +128,25 @@ export default function GoalsDashboard() {
                 const params: any = {};
                 if (userId) params.userId = userId;
 
-                const [summaryRes, rotinaRes, financeiroRes] = await Promise.all([
+                const [summaryRes, rotinaRes, financeiroRes, metasRes] = await Promise.all([
                     api.get('/goals/summary', { params }),
                     api.get('/tasks', { params }),
                     api.get('/transactions/summary-by-responsible', { params }),
+                    api.get('/goals', { params }),
                 ]);
+
+                console.log('Summary:', summaryRes.data);
+                console.log('Rotina Diária:', rotinaRes.data);
+                console.log('Resumo Financeiro:', financeiroRes.data);
+                console.log('Metas Completas:', metasRes.data);
 
                 setSummary(summaryRes.data);
                 setRotinaDiaria(rotinaRes.data);
-                setResumoFinanceiro(financeiroRes.data.resumo || '');
-            } catch {
-                console.error('Erro ao carregar dados');
+                setResumoFinanceiro(gerarResumoFinanceiroTexto(financeiroRes.data));
+                setMetasCompletas(metasRes.data || []);
+
+            } catch (err) {
+                console.error('Erro ao carregar dados:', err);
             }
         }
 
@@ -73,18 +154,17 @@ export default function GoalsDashboard() {
     }, [userId]);
 
     useEffect(() => {
-        if (summary && rotinaDiaria.length > 0 && resumoFinanceiro) {
+        // Condição para só gerar insight quando tudo estiver carregado
+        if (
+            metasCompletas.length > 0 &&
+            rotinaDiaria.length > 0 &&
+            resumoFinanceiro &&
+            summary // opcional: garantir que summary tenha carregado também
+        ) {
             gerarInsightMetas();
         }
-    }, [summary, rotinaDiaria, resumoFinanceiro]);
+    }, [metasCompletas, rotinaDiaria, resumoFinanceiro, summary]);
 
-    function gerarInsightMetas() {
-        api.post('/insights/meta', {
-            metas: summary?.categorySummary || [],
-        })
-            .then(res => setInsight(res.data.insight))
-            .catch(() => setInsight('Não foi possível gerar insight no momento.'));
-    }
 
     function formatMonthLabel(month: string) {
         try {
@@ -206,6 +286,7 @@ export default function GoalsDashboard() {
                         {insight && (
                             <div className="bg-neutral-800 p-4 rounded-xl border border-neutral-700 text-sm text-neutral-300 shadow">
                                 <h2 className="text-lg font-semibold mb-2">💡 Insight da IA</h2>
+
                                 <p>{insight}</p>
                             </div>
                         )}

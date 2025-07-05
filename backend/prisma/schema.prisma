@@ -7,42 +7,14 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Transaction {
-  id          String   @id @default(auto()) @map("_id") @db.ObjectId
-  title       String
-  amount      Float    // Pode ser positivo (receita) ou negativo (despesa)
-  category    String
-  type        String   // "income" ou "expense"
-  date        DateTime
-  description String?
-  userId      String   @db.ObjectId
-  createdAt   DateTime @default(now())
-  responsavel String?
-  user User? @relation(fields: [userId], references: [id])
-}
-
-model Goal {
-  id           String   @id @default(auto()) @map("_id") @db.ObjectId
-  title        String
-  description  String?
-  category     String?      // Categoria da meta, ex: Saúde, Financeiro, Espiritual etc
-  responsible  String?      // Responsável, ex: 'mae', 'pai', 'fabricio'
-  deadline     DateTime?    // Prazo da meta
-  completed    Boolean     @default(false)
-  recurring    Boolean     @default(false)  // Meta recorrente? (ex: rotina diária)
-  userId       String      @db.ObjectId
-  createdAt    DateTime    @default(now())
-  
-  user         User        @relation(fields: [userId], references: [id])
-}
-
-
 model User {
   id           String        @id @default(auto()) @map("_id") @db.ObjectId
   name         String
   email        String        @unique
-  tasks        Task[]        @relation(fields: [], references: [])
-  transactions Transaction[] @relation(fields: [], references: [])
+  password     String
+  tasks        Task[]
+  transactions Transaction[]
+  goals        Goal[]
   createdAt    DateTime      @default(now())
 }
 
@@ -55,6 +27,36 @@ model Task {
   tag         String?
   userId      String   @db.ObjectId
   createdAt   DateTime @default(now())
-  
-  user User? @relation(fields: [userId], references: [id])
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Transaction {
+  id          String   @id @default(auto()) @map("_id") @db.ObjectId
+  title       String
+  amount      Float
+  category    String
+  type        String   // "income" ou "expense"
+  date        DateTime
+  description String?
+  userId      String   @db.ObjectId
+  createdAt   DateTime @default(now())
+  responsavel String?
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Goal {
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
+  title        String
+  description  String?
+  category     String?
+  responsible  String?
+  deadline     DateTime?
+  completed    Boolean  @default(false)
+  recurring    Boolean  @default(false)
+  userId       String   @db.ObjectId
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }
