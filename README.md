@@ -52,8 +52,8 @@ cd backend
 npm install
 
 # Configure as variáveis de ambiente
-cp .env.example .env
-# Edite o arquivo .env e insira sua DATABASE_URL do MongoDB
+.env
+# Edite o arquivo .env e insira sua DATABASE_URL, JWT_TOKEN e GEMINI_API_KEY
 
 # Inicie o backend
 npm run start:dev
